@@ -50,6 +50,8 @@ export default function(name, { id = env.B2_ID, key = env.B2_KEY } = {}) {
       type: file.contentType,
       size: file.contentLength,
       url: baseURL + file.fileName,
+      id: file.fileId,
+      bucketId: file.bucketId,
       timestamp: new Date(file.uploadTimestamp)
     });
     const files = [];
@@ -174,5 +176,12 @@ export default function(name, { id = env.B2_ID, key = env.B2_KEY } = {}) {
     return remoteFile;
   };
 
-  return { info, list, count, exists, upload, read, download, remove };
+  const removeFile = async file => {
+    await b2.deleteFileVersion({
+      fileId: file.id,
+      fileName: file.name
+    });
+  }
+
+  return { info, list, count, exists, upload, read, download, remove, removeFile };
 }
